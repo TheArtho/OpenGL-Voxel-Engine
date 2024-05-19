@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "eI6XNeMc/vGL7hfFyNzzU3w3LgEGtqfku76PkiZ8nqoIqDPI0JuW/VySFL5p8OYGcmXwPGGh9ZzkPT6RpalZIA==",
+  "dgSpecHash": "f+nLt5fdAhqvp+g1wIv5QsXtSz73Jj36ahWr5xx76wlI+gp3eGWdUWIX80G7/rFKRoTuTJMG9qZDbWZCmORnpg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\artho\\Documents\\OpenGL\\ConsoleApp1\\ConsoleApp1\\ConsoleApp1.csproj",
+  "projectFilePath": "C:\\Users\\artho\\Documents\\OpenGL\\OpenGL-Voxel-Engine\\ConsoleApp1\\ConsoleApp1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\artho\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
     "C:\\Users\\artho\\.nuget\\packages\\microsoft.dotnet.platformabstractions\\3.1.6\\microsoft.dotnet.platformabstractions.3.1.6.nupkg.sha512",

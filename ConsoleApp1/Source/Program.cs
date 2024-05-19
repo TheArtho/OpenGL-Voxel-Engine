@@ -96,6 +96,8 @@ namespace Minecraft
 
             Gl = GL.GetApi(window);
             
+            Gl.Enable(EnableCap.CullFace);
+            
             /*
 
             //Ebo = new BufferObject<uint>(Gl, Indices, BufferTargetARB.ElementArrayBuffer);
@@ -106,17 +108,15 @@ namespace Minecraft
             Vao.VertexAttributePointer(1, 2, VertexAttribPointerType.Float, 5, 3);
             
             */
-
-            testMesh = new Mesh(Gl, JsonMeshLoader.LoadGeometryFile("../../../Assets/Geometries/turthug.geo.json"));
-
+            
             Shader = new Shader(Gl, "../../../Assets/Shaders/shader.vert", "../../../Assets/Shaders/shader.frag");
 
-            Texture = new Texture(Gl, "../../../Assets/Textures/cobblestone.png");
+            Texture = new Texture(Gl, "../../../Assets/Textures/turthug/turthug_final.png");
             Texture2 = new Texture(Gl, "../../../Assets/Textures/diamond_block.png");
-
+            
             Material = new Material(Shader, Texture);
 
-            testMesh.material = Material;
+            testMesh = new Mesh(Gl, JsonMeshLoader.LoadGeometryFile("../../../Assets/Geometries/turthug.geo.json"), Material);
         }
 
         private static unsafe void OnUpdate(double deltaTime)
@@ -180,6 +180,8 @@ namespace Minecraft
             orbit_camera.SetRadius(CameraRadius);
 
             Gl.Enable(EnableCap.DepthTest);
+            Gl.Enable(GLEnum.Blend);
+            Gl.BlendFunc(GLEnum.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             Gl.Clear((uint) (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
 
             // Vao.Bind();
@@ -205,7 +207,7 @@ namespace Minecraft
             var model = Matrix4x4.CreateTranslation(cubePosition); // * Matrix4x4.CreateRotationY(MathHelper.DegreesToRadians(difference)) * Matrix4x4.CreateRotationX(MathHelper.DegreesToRadians(difference));
             Shader.SetUniform("uModel", model);
             
-            testMesh.Render(model);
+            testMesh.Render(model, camera);
 
             /*
             int[,] chunk = new int[,]

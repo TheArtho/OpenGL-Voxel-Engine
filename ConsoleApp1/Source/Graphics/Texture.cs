@@ -8,6 +8,9 @@ namespace Minecraft
     public class Texture : IDisposable
     {
         private static uint texUnit;
+
+        public uint width;
+        public uint height;
         
         private uint _handle;
         private GL _gl;
@@ -23,6 +26,9 @@ namespace Minecraft
             {
                 gl.TexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba8, (uint) img.Width, (uint) img.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, null);
 
+                width = (uint) img.Width;
+                height = (uint) img.Height;
+                
                 img.ProcessPixelRows(accessor =>
                 {
                     for (int y = 0; y < accessor.Height; y++)
