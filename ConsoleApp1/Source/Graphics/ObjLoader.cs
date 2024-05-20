@@ -12,14 +12,14 @@ public class ObjLoader
 {
     struct Vertex
     {
-        Vector3 position;
-        Vector3 normal;
-        Vector2 texCoords;
+        public Vector3 position;
+        // public Vector3 normal;
+        public Vector2 texCoords;
     };
     
     private GL _gl;
-    private VertexArrayObject<float, uint> _vao;
-    private BufferObject<float> _vbo;
+    private VertexArrayObject<Vertex, uint> _vao;
+    private BufferObject<Vertex> _vbo;
     private BufferObject<uint> _ebo;
 
     private List<Vector3> _vertices = new List<Vector3>();
@@ -29,7 +29,7 @@ public class ObjLoader
     private List<uint> _uvIndices = new List<uint>();
     private List<uint> _normalIndices = new List<uint>();
 
-    private List<float> vertexData = new List<float>();
+    private List<Vertex> vertexData = new List<Vertex>();
 
     private Material material;
 
@@ -117,60 +117,61 @@ public class ObjLoader
         // _normals.ForEach(Console.WriteLine);
         for (int i = 0; i < _vertexIndices.Count - 4; i += 4)
         {
+            Vertex v0;
             int vertexIndex, uvIndex, normalIndex;
             
             /// First Triangle Face (0,1,2)
             for (int j = 0; j <= 2; j++)
             {
+                Vertex v1;
+                
                 vertexIndex = (int)_vertexIndices[i+j];
                 uvIndex = (int)_uvIndices[i+j];
                 // normalIndex = (int)_indices[i+j];
                 
-                Console.WriteLine($"{uvIndex}");
+                //Console.WriteLine($"{uvIndex}");
                 
-                vertexData.Add(_vertices[vertexIndex].X);
-                vertexData.Add(_vertices[vertexIndex].Y);
-                vertexData.Add(_vertices[vertexIndex].Z);
-                vertexData.Add(_uvs[uvIndex].X);
-                vertexData.Add(_uvs[uvIndex].Y);
+                v1.position = _vertices[vertexIndex];
+                v1.texCoords = _uvs[uvIndex];
+                
+                vertexData.Add(v1);
             }
             
             // Second Triangle Face (2,3,0)
             for (int j = 2; j <= 3; j++)
             {
+                Vertex v1;
+                
                 vertexIndex = (int)_vertexIndices[i+j];
                 uvIndex = (int)_uvIndices[i+j];
                 // normalIndex = (int)_indices[i+j];
                 
-                Console.WriteLine($"{uvIndex}");
+                //Console.WriteLine($"{uvIndex}");
                 
-                vertexData.Add(_vertices[vertexIndex].X);
-                vertexData.Add(_vertices[vertexIndex].Y);
-                vertexData.Add(_vertices[vertexIndex].Z);
-                vertexData.Add(_uvs[uvIndex].X);
-                vertexData.Add(_uvs[uvIndex].Y);
+                v1.position = _vertices[vertexIndex];
+                v1.texCoords = _uvs[uvIndex];
+                
+                vertexData.Add(v1);
             }
             vertexIndex = (int)_vertexIndices[i];
             uvIndex = (int)_uvIndices[i];
             // normalIndex = (int)_indices[i];
             
-            Console.WriteLine($"{uvIndex}");
-                
-            vertexData.Add(_vertices[vertexIndex].X);
-            vertexData.Add(_vertices[vertexIndex].Y);
-            vertexData.Add(_vertices[vertexIndex].Z);
-            vertexData.Add(_uvs[uvIndex].X);
-            vertexData.Add(_uvs[uvIndex].Y);
+            v0.position = _vertices[vertexIndex];
+            v0.texCoords = _uvs[uvIndex];
+            
+            vertexData.Add(v0);
         }
         
-        _vbo = new BufferObject<float>(_gl, new Span<float>(vertexData.ToArray()), BufferTargetARB.ArrayBuffer);
-        // _ebo = new BufferObject<uint>(_gl, new Span<uint>(vertexData.ToArray()), BufferTargetARB.ElementArrayBuffer);
-        _vao = new VertexArrayObject<float, uint>(_gl, _vbo);
+        Console.WriteLine($"{vertexData.Count}");
+        
+        _vbo = new BufferObject<Vertex>(_gl, vertexData.ToArray(), BufferTargetARB.ArrayBuffer);
+        _vao = new VertexArrayObject<Vertex, uint>(_gl, _vbo);
             
         // Position
-        _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 5, 0);
+        _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 2, 0);
         // Tex Coord
-        _vao.VertexAttributePointer(1, 2, VertexAttribPointerType.Float, 5, 3);
+        _vao.VertexAttributePointer(1, 2, VertexAttribPointerType.Float, 2, 3);
         // Normals
         // _vao.VertexAttributePointer(2, 3, VertexAttribPointerType.Float, 8, 5);
         
@@ -182,7 +183,7 @@ public class ObjLoader
         _vao.Bind();
         material.texture.Bind(0);
         
-        _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint) vertexData.Count / 5);
+        _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint) vertexData.Count);
         _gl.BindVertexArray(0);
     }
 
