@@ -27,6 +27,7 @@ namespace Minecraft
         private static Texture Texture, Texture2;
         private static Shader Shader;
         private static Material Material;
+        private static Material Material2;
         
         //Setup the camera's location, directions, and movement speed
         private static FPSCamera fps_camera = new FPSCamera();
@@ -48,7 +49,8 @@ namespace Minecraft
         
         // Cube
         // private static Cube cubeMesh = new Cube(Gl);
-        private static Mesh testMesh;
+        private static Mesh jsonMesh;
+        private static ObjLoader objMesh;
         private static Vector3 cubePosition = new Vector3(0, 0, 0);
         
         private static readonly uint[] Indices =
@@ -96,7 +98,7 @@ namespace Minecraft
 
             Gl = GL.GetApi(window);
             
-            Gl.Enable(EnableCap.CullFace);
+            //Gl.Enable(EnableCap.CullFace);
             
             /*
 
@@ -111,12 +113,15 @@ namespace Minecraft
             
             Shader = new Shader(Gl, "../../../Assets/Shaders/shader.vert", "../../../Assets/Shaders/shader.frag");
 
-            Texture = new Texture(Gl, "../../../Assets/Textures/turthug/turthug_final.png");
-            Texture2 = new Texture(Gl, "../../../Assets/Textures/diamond_block.png");
+            Texture = new Texture(Gl, "../../../Assets/Textures/zoroark.png");
+            Texture2 = new Texture(Gl, "../../../Assets/Textures/bulbasaur.png");
             
             Material = new Material(Shader, Texture);
+            Material2 = new Material(Shader, Texture2);
 
-            testMesh = new Mesh(Gl, JsonMeshLoader.LoadGeometryFile("../../../Assets/Geometries/turthug.geo.json"), Material);
+            jsonMesh = new Mesh(Gl, JsonMeshLoader.LoadGeometryFile("../../../Assets/Geometries/bulbasaur.geo.json"), Material2);
+
+            objMesh = new ObjLoader(Gl, "../../../Assets/Geometries/zoroark.obj", Material);
         }
 
         private static unsafe void OnUpdate(double deltaTime)
@@ -180,8 +185,8 @@ namespace Minecraft
             orbit_camera.SetRadius(CameraRadius);
 
             Gl.Enable(EnableCap.DepthTest);
-            Gl.Enable(GLEnum.Blend);
-            Gl.BlendFunc(GLEnum.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            //Gl.Enable(GLEnum.Blend);
+            //Gl.BlendFunc(GLEnum.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             Gl.Clear((uint) (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
 
             // Vao.Bind();
@@ -207,7 +212,12 @@ namespace Minecraft
             var model = Matrix4x4.CreateTranslation(cubePosition); // * Matrix4x4.CreateRotationY(MathHelper.DegreesToRadians(difference)) * Matrix4x4.CreateRotationX(MathHelper.DegreesToRadians(difference));
             Shader.SetUniform("uModel", model);
             
-            testMesh.Render(model, camera);
+            // jsonMesh.Render(model, camera);
+            
+            model = Matrix4x4.CreateScale(2);
+            Shader.SetUniform("uModel", model);
+            
+            objMesh.Render();
 
             /*
             int[,] chunk = new int[,]
@@ -274,7 +284,8 @@ namespace Minecraft
         {
             // Vbo.Dispose();
             // Vao.Dispose();
-            testMesh.Dispose();
+            jsonMesh.Dispose();
+            objMesh.Dispose();
             Shader.Dispose();
             Texture.Dispose();
         }

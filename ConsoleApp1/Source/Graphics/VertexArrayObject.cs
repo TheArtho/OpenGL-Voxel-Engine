@@ -17,7 +17,7 @@ namespace Minecraft
             _handle = _gl.GenVertexArray();
             Bind();
             vbo.Bind();
-            // ebo.Bind();
+            ebo.Bind();
         }
         
         public VertexArrayObject(GL gl, BufferObject<TVertexType> vbo)
@@ -27,7 +27,6 @@ namespace Minecraft
             _handle = _gl.GenVertexArray();
             Bind();
             vbo.Bind();
-            // ebo.Bind();
         }
 
         public unsafe void VertexAttributePointer(uint index, int count, VertexAttribPointerType type, uint vertexSize, int offSet)
@@ -39,6 +38,11 @@ namespace Minecraft
         public void Bind()
         {
             _gl.BindVertexArray(_handle);
+        }
+
+        public void unBind()
+        {
+            _gl.BindVertexArray(0);
         }
 
         public void Dispose()

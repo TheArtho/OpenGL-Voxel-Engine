@@ -20,7 +20,7 @@ namespace Minecraft
             _gl = gl;
 
             _handle = _gl.GenTexture();
-            Bind(texUnit++);
+            Bind(0);
 
             using (var img = Image.Load<Rgba32>(path))
             {

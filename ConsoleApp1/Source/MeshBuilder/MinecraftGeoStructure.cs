@@ -83,3 +83,36 @@ public class Cube
     [JsonProperty("mirror")]
     public bool Mirror { get; set; }
 }
+
+public abstract class Uv { }
+
+public class UvSplit : Uv
+{
+    public class UvParam
+    {
+        [JsonProperty("uv")]
+        public List<float> Uv;
+        
+        [JsonProperty("uv_size")]
+        public List<float> UvSize;
+    }
+
+    [JsonProperty("north")]
+    public UvParam North;
+    [JsonProperty("east")]
+    public UvParam East;
+    [JsonProperty("south")]
+    public UvParam South;
+    [JsonProperty("west")]
+    public UvParam West;
+    [JsonProperty("up")]
+    public UvParam Up;
+    [JsonProperty("down")]
+    public UvParam Down;
+}
+
+public class UvSimple : Uv
+{
+    [JsonProperty("uv")]
+    public List<float>? Uv;
+}

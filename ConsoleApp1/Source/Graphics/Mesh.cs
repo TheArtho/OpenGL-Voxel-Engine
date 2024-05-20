@@ -24,7 +24,6 @@ public class Mesh
 
     public class CubeData
     {
-        public string boneName;
         public string? boneParent;
         
         public Vector3 origin;
@@ -46,8 +45,10 @@ public class Mesh
     #endregion
 
     public Material material;
-    public float scale = 0.2f;
+    public float scale = (float) 1/16;
 
+    private List<float> _vertices = new List<float>();
+        
     public Mesh(GL gl, GeometryFile geometryFile, Material material)
     {
         _vbos = new List<BufferObject<float>>();
@@ -81,8 +82,7 @@ public class Mesh
                 {
                     CubeData cubeData = new CubeData()
                     {
-                        boneName = bone.Name,
-                        boneParent = bone.Parent
+                        boneParent = bone.Name
                     };
                     _cubesData.Add(cubeData);
                     AddCubeVertices(cube, cubeData);
@@ -103,9 +103,10 @@ public class Mesh
         origin -= Vector3.One * (cube.Inflate / 2);
         Vector3 size = Vector3.One;
         size = new Vector3(cube.Size[0], cube.Size[1], cube.Size[2]);
-        Vector3 sizeUV = size;
-        size += Vector3.One *  (cube.Inflate / 2);
+        Vector3 sizeUV = size; 
+        size += Vector3.One * (cube.Inflate / 2);
         Vector2 uv = new Vector2(cube.Uv[0], cube.Uv[1]);
+        bool mirror = cube.Mirror;
 
         if (cube.Pivot != null)
         {
@@ -117,26 +118,46 @@ public class Mesh
             rotation = new Vector3(cube.Rotation[0], cube.Rotation[1], cube.Rotation[2]);
         }
         
-        Console.WriteLine(uv);
-
+        float X_0;
+        float X_1;
+        float Y_0;
+        float Y_1;
+        
         // Front Face
         
-        float X_1 = (uv.X + sizeUV.Z) / (float) material.texture.width;
-        float X_0 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.texture.width;
-        float Y_0 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
-        float Y_1 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
+        X_0 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.texture.width;
+        X_1 = (uv.X + sizeUV.Z) / (float) material.texture.width;
+        Y_0 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
+        Y_1 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
         
-        cubeData.faces.Add(new List<float>
-            {
-                // Sommet pour une face d'un cube (6 sommets pour deux triangles)
-                origin.X, origin.Y, origin.Z, X_0, Y_1,
-                origin.X + size.X, origin.Y, origin.Z, X_1, Y_1,
-                origin.X + size.X, origin.Y + size.Y, origin.Z, X_1, Y_0,
-                origin.X + size.X, origin.Y + size.Y, origin.Z, X_1, Y_0,
-                origin.X, origin.Y + size.Y, origin.Z, X_0, Y_0,
-                origin.X, origin.Y, origin.Z, X_0, Y_1,
-            }
-        );
+        if (mirror)
+        {
+            cubeData.faces.Add(new List<float>
+                {
+                    // Sommet pour une face d'un cube (6 sommets pour deux triangles)
+                    origin.X, origin.Y, origin.Z, X_0, Y_1,
+                    origin.X + size.X, origin.Y, origin.Z, X_1, Y_1,
+                    origin.X + size.X, origin.Y + size.Y, origin.Z, X_1, Y_0,
+                    origin.X + size.X, origin.Y + size.Y, origin.Z, X_1, Y_0,
+                    origin.X, origin.Y + size.Y, origin.Z, X_0, Y_0,
+                    origin.X, origin.Y, origin.Z, X_0, Y_1,
+                }
+            );
+        }
+        else
+        {
+            cubeData.faces.Add(new List<float>
+                {
+                    // Sommet pour une face d'un cube (6 sommets pour deux triangles)
+                    origin.X, origin.Y, origin.Z, X_1, Y_1,
+                    origin.X + size.X, origin.Y, origin.Z, X_0, Y_1,
+                    origin.X + size.X, origin.Y + size.Y, origin.Z, X_0, Y_0,
+                    origin.X + size.X, origin.Y + size.Y, origin.Z, X_0, Y_0,
+                    origin.X, origin.Y + size.Y, origin.Z, X_1, Y_0,
+                    origin.X, origin.Y, origin.Z, X_1, Y_1,
+                }
+            );
+        }
         
         X_0 = (uv.X + sizeUV.Z*2 + sizeUV.X) / (float) material.texture.width;
         X_1 = (uv.X + sizeUV.Z*2 + sizeUV.X*2) / (float) material.texture.width;
@@ -144,24 +165,50 @@ public class Mesh
         Y_1 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
         
         // Back Face
-        
-        cubeData.faces.Add(new List<float>
+
+        if (mirror)
         {
-            // Sommet pour une face d'un cube (6 sommets pour deux triangles)
-            origin.X, origin.Y, origin.Z + size.Z, X_0, Y_1,
-            origin.X + size.X, origin.Y, origin.Z + size.Z, X_1, Y_1,
-            origin.X + size.X, origin.Y + size.Y, origin.Z + size.Z, X_1, Y_0,
-            origin.X + size.X, origin.Y + size.Y, origin.Z + size.Z, X_1, Y_0,
-            origin.X, origin.Y + size.Y, origin.Z + size.Z, X_0, Y_0,
-            origin.X, origin.Y, origin.Z + size.Z, X_0, Y_1,
-        });
+            cubeData.faces.Add(new List<float>
+            {
+                // Sommet pour une face d'un cube (6 sommets pour deux triangles)
+                origin.X, origin.Y, origin.Z + size.Z, X_0, Y_1,
+                origin.X + size.X, origin.Y, origin.Z + size.Z, X_1, Y_1,
+                origin.X + size.X, origin.Y + size.Y, origin.Z + size.Z, X_1, Y_0,
+                origin.X + size.X, origin.Y + size.Y, origin.Z + size.Z, X_1, Y_0,
+                origin.X, origin.Y + size.Y, origin.Z + size.Z, X_0, Y_0,
+                origin.X, origin.Y, origin.Z + size.Z, X_0, Y_1,
+            });
+        }
+        else
+        {
+            cubeData.faces.Add(new List<float>
+            {
+                // Sommet pour une face d'un cube (6 sommets pour deux triangles)
+                origin.X, origin.Y, origin.Z + size.Z, X_1, Y_1,
+                origin.X + size.X, origin.Y, origin.Z + size.Z, X_0, Y_1,
+                origin.X + size.X, origin.Y + size.Y, origin.Z + size.Z, X_0, Y_0,
+                origin.X + size.X, origin.Y + size.Y, origin.Z + size.Z, X_0, Y_0,
+                origin.X, origin.Y + size.Y, origin.Z + size.Z, X_1, Y_0,
+                origin.X, origin.Y, origin.Z + size.Z, X_1, Y_1,
+            });
+        }
 
         // Left Face
-        
-        X_0 = (uv.X) / (float) material.texture.width;
-        X_1 = (uv.X + sizeUV.X) / (float) material.texture.width;
-        Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
-        Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
+
+        if (mirror)
+        {
+            X_1 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.texture.width;
+            X_0 = (uv.X + sizeUV.X*2 + sizeUV.Z) / (float) material.texture.width;
+            Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
+            Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
+        }
+        else
+        {
+            X_0 = (uv.X) / (float) material.texture.width;
+            X_1 = (uv.X + sizeUV.X) / (float) material.texture.width;
+            Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
+            Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
+        }
         
         cubeData.faces.Add(new List<float>
         {
@@ -175,11 +222,21 @@ public class Mesh
         });
         
         // Right Face
-        
-        X_1 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.texture.width;
-        X_0 = (uv.X + sizeUV.X*2 + sizeUV.Z) / (float) material.texture.width;
-        Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
-        Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
+
+        if (mirror)
+        {
+            X_0 = (uv.X) / (float) material.texture.width;
+            X_1 = (uv.X + sizeUV.X) / (float) material.texture.width;
+            Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
+            Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
+        }
+        else
+        {
+            X_1 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.texture.width;
+            X_0 = (uv.X + sizeUV.X*2 + sizeUV.Z) / (float) material.texture.width;
+            Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
+            Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
+        }
 
         cubeData.faces.Add(new List<float>
         {
@@ -196,43 +253,114 @@ public class Mesh
         
         X_0 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.texture.width;
         X_1 = (uv.X + sizeUV.X*2 + sizeUV.Z) / (float) material.texture.width;
-        Y_0 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
-        Y_1 = (uv.Y) / (float) material.texture.height;
-        
-        cubeData.faces.Add(new List<float>
+        Y_0 = (uv.Y) / (float) material.texture.height;
+        Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
+
+        if (mirror)
         {
-            // Sommet pour une face d'un cube (6 sommets pour deux triangles)
-            origin.X, origin.Y, origin.Z, X_0, Y_1,
-            origin.X + size.X, origin.Y, origin.Z, X_1, Y_1,
-            origin.X + size.X, origin.Y, origin.Z + size.Z, X_1, Y_0,
-            origin.X + size.X, origin.Y, origin.Z + size.Z, X_1, Y_0,
-            origin.X, origin.Y, origin.Z + size.Z, X_0, Y_0,
-            origin.X, origin.Y, origin.Z, X_0, Y_1,
-        });
+            cubeData.faces.Add(new List<float>
+            {
+                // Sommet pour une face d'un cube (6 sommets pour deux triangles)
+                origin.X, origin.Y, origin.Z, X_1, Y_1,
+                origin.X + size.X, origin.Y, origin.Z, X_0, Y_1,
+                origin.X + size.X, origin.Y, origin.Z + size.Z, X_0, Y_0,
+                origin.X + size.X, origin.Y, origin.Z + size.Z, X_0, Y_0,
+                origin.X, origin.Y, origin.Z + size.Z, X_1, Y_0,
+                origin.X, origin.Y, origin.Z, X_1, Y_1,
+            });
+        }
+        else
+        {
+            cubeData.faces.Add(new List<float>
+            {
+                // Sommet pour une face d'un cube (6 sommets pour deux triangles)
+                origin.X, origin.Y, origin.Z, X_0, Y_1,
+                origin.X + size.X, origin.Y, origin.Z, X_1, Y_1,
+                origin.X + size.X, origin.Y, origin.Z + size.Z, X_1, Y_0,
+                origin.X + size.X, origin.Y, origin.Z + size.Z, X_1, Y_0,
+                origin.X, origin.Y, origin.Z + size.Z, X_0, Y_0,
+                origin.X, origin.Y, origin.Z, X_0, Y_1,
+            });
+        }
+        
         
         // Top Face
         
-        X_0 = (uv.X + sizeUV.Z) / (float) material.texture.width;
-        X_1 = (uv.X + sizeUV.X + sizeUV.Z) / (float) material.texture.width;
-        Y_0 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
-        Y_1 = (uv.Y) / (float) material.texture.height;
+        X_0 = (uv.X + sizeUV.X + sizeUV.Z) / (float) material.texture.width;
+        X_1 = (uv.X + sizeUV.Z) / (float) material.texture.width;
+        Y_0 = (uv.Y) / (float) material.texture.height;
+        Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
 
-        cubeData.faces.Add(new List<float>
+        if (mirror)
         {
-            // Sommet pour une face d'un cube (6 sommets pour deux triangles)
-            origin.X, origin.Y + size.Y, origin.Z, X_0, Y_1,
-            origin.X + size.X, origin.Y + size.Y, origin.Z, X_1, Y_1,
-            origin.X + size.X, origin.Y + size.Y, origin.Z + size.Z, X_1, Y_0,
-            origin.X + size.X, origin.Y + size.Y, origin.Z + size.Z, X_1, Y_0,
-            origin.X, origin.Y + size.Y, origin.Z + size.Z, X_0, Y_0,
-            origin.X, origin.Y + size.Y, origin.Z, X_0, Y_1,
-        });
+            cubeData.faces.Add(new List<float>
+            {
+                // Sommet pour une face d'un cube (6 sommets pour deux triangles)
+                origin.X, origin.Y + size.Y, origin.Z, X_0, Y_1,
+                origin.X + size.X, origin.Y + size.Y, origin.Z, X_1, Y_1,
+                origin.X + size.X, origin.Y + size.Y, origin.Z + size.Z, X_1, Y_0,
+                origin.X + size.X, origin.Y + size.Y, origin.Z + size.Z, X_1, Y_0,
+                origin.X, origin.Y + size.Y, origin.Z + size.Z, X_0, Y_0,
+                origin.X, origin.Y + size.Y, origin.Z, X_0, Y_1,
+            });
+        }
+        else
+        {
+            cubeData.faces.Add(new List<float>
+            {
+                // Sommet pour une face d'un cube (6 sommets pour deux triangles)
+                origin.X, origin.Y + size.Y, origin.Z, X_1, Y_1,
+                origin.X + size.X, origin.Y + size.Y, origin.Z, X_0, Y_1,
+                origin.X + size.X, origin.Y + size.Y, origin.Z + size.Z, X_0, Y_0,
+                origin.X + size.X, origin.Y + size.Y, origin.Z + size.Z, X_0, Y_0,
+                origin.X, origin.Y + size.Y, origin.Z + size.Z, X_1, Y_0,
+                origin.X, origin.Y + size.Y, origin.Z, X_1, Y_1,
+            });
+        }
         
         // origin = new Vector3(cube.Origin[0], cube.Origin[1], cube.Origin[2]);
         // origin -= Vector3.One * (cube.Inflate / 2);
         //
         // size = new Vector3(cube.Size[0], cube.Size[1], cube.Size[2]);
         // size += Vector3.One *  (cube.Inflate / 2);
+
+        Vector3 localPivot = (origin - pivot);
+        
+        Matrix4x4 R_x = Matrix4x4.CreateRotationX(MathHelper.DegreesToRadians(-rotation.X));
+        Matrix4x4 R_y = Matrix4x4.CreateRotationY(MathHelper.DegreesToRadians(-rotation.Y));
+        Matrix4x4 R_z = Matrix4x4.CreateRotationZ(MathHelper.DegreesToRadians(-rotation.Z));
+                
+        // calculate rotation matrix
+        Matrix4x4 rotationMatrix = R_z * R_y * R_x;
+                
+        Matrix4x4 T_to_origin = Matrix4x4.CreateTranslation(-origin);
+        Matrix4x4 T_back_from_origin = Matrix4x4.CreateTranslation(origin);
+        Matrix4x4 T_to_pivot = Matrix4x4.CreateTranslation(-localPivot);
+        Matrix4x4 T_back_from_pivot = Matrix4x4.CreateTranslation(localPivot);
+
+        BoneData? parentBone = _bonesData.Find((data => data.name == cubeData.boneParent));        
+        
+        Matrix4x4 parentRecursiveTransform = parentBone == null ? Matrix4x4.Identity : ApplyTransformBoneRecursive(parentBone);
+        
+        // Transform each vertice by its rotation and pivot data
+        foreach (var face in cubeData.faces)
+        {
+            for (int i = 0; i < face.Count; i += 5)
+            {
+                Vector3 transformedVertex;
+                Vector3 vertex = new Vector3(face[i], face[i + 1], face[i + 2]);
+
+                Matrix4x4 transformationMatrix = T_to_origin * T_back_from_pivot * rotationMatrix * T_to_pivot * T_back_from_origin * parentRecursiveTransform;
+
+                // Console.WriteLine(T_to_origin);
+                
+                transformedVertex = Vector3.Transform(vertex, transformationMatrix);
+
+                face[i] = transformedVertex.X;
+                face[i+1] = transformedVertex.Y;
+                face[i+2] = transformedVertex.Z;
+            }
+        }
 
         cubeData.rotation = rotation;
         cubeData.pivot = pivot;
@@ -269,7 +397,7 @@ public class Mesh
         Matrix4x4 boneTransform = Matrix4x4.CreateTranslation(-cube.pivot)
                                   * Matrix4x4.CreateRotationZ(MathHelper.DegreesToRadians(cube.rotation.Z))
                                   * Matrix4x4.CreateRotationY(MathHelper.DegreesToRadians(cube.rotation.Y))
-                                  * Matrix4x4.CreateRotationX(MathHelper.DegreesToRadians(cube.rotation.X))
+                                  * Matrix4x4.CreateRotationX(MathHelper.DegreesToRadians(-cube.rotation.X))
                                   * Matrix4x4.CreateTranslation(cube.pivot);
 
         if (parentBone != null)
@@ -286,10 +414,12 @@ public class Mesh
     {
         BoneData? parentBone = _bonesData.Find((data => data.name == bone.parent));
 
+        Matrix4x4 rotationMatrix = Matrix4x4.CreateRotationZ(MathHelper.DegreesToRadians(-bone.rotation.Z))
+                                   * Matrix4x4.CreateRotationY(MathHelper.DegreesToRadians(bone.rotation.Y))
+                                   * Matrix4x4.CreateRotationX(MathHelper.DegreesToRadians(-bone.rotation.X));
+
         Matrix4x4 boneTransform = Matrix4x4.CreateTranslation(-bone.pivot)
-                                  * Matrix4x4.CreateRotationZ(MathHelper.DegreesToRadians(bone.rotation.Z))
-                                  * Matrix4x4.CreateRotationY(MathHelper.DegreesToRadians(bone.rotation.Y))
-                                  * Matrix4x4.CreateRotationX(MathHelper.DegreesToRadians(bone.rotation.X))
+                                  * rotationMatrix
                                   * Matrix4x4.CreateTranslation(bone.pivot);
 
         if (parentBone != null)
@@ -343,20 +473,19 @@ public class Mesh
             foreach (var face in cube.faces)
             {
                 _vaos[i].Bind();
+                material.texture.Bind(0);
                 
                 newModel = ApplyTransformRecursive(cube) * model * Matrix4x4.CreateScale(scale);
                 
                 material.shader.SetUniform("uModel", model * Matrix4x4.CreateScale(scale));
                 
-                _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint) face.Count / 3);
+                _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint) face.Count / 5);
                 
                 // Incrementing only once a face is drawn
                 i++;
                 faceIndex++;
             }
         }
-        
-
     }
 
     public void Dispose()

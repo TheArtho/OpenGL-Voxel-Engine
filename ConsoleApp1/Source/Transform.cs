@@ -59,6 +59,33 @@ namespace Minecraft
 
             return angles;
         }
+        
+        public static Quaternion ToQuaternion(Vector3 eulerAngles) // roll (x), pitch (y), yaw (z), angles are in radians
+        {
+            // Abbreviations for the various angular functions
+
+            float roll = MathHelper.DegreesToRadians(eulerAngles.X);
+            float pitch = MathHelper.DegreesToRadians(eulerAngles.Y);
+            float yaw = MathHelper.DegreesToRadians(eulerAngles.Z);
+
+            float cr = MathF.Cos(roll * 0.5f);
+            float sr = MathF.Sin(roll * 0.5f);
+            float cp = MathF.Cos(pitch * 0.5f);
+            float sp = MathF.Sin(pitch * 0.5f);
+            float cy = MathF.Cos(yaw * 0.5f);
+            float sy = MathF.Sin(yaw * 0.5f);
+            
+            Quaternion q = new Quaternion(
+                    cr * cp * cy + sr * sp * sy,
+                    sr * cp * cy - cr * sp * sy,
+                    cr * sp * cy + sr * cp * sy,
+                    cr * cp * sy - sr * sp * cy
+            );
+            
+            //Console.WriteLine(q);
+
+            return q;
+        }
 
         public void LookAt(Vector3 target)
         {
@@ -107,5 +134,11 @@ namespace Minecraft
         {
             return Transform.ToEulerAngles(q);
         }
+        
+        public static Quaternion ToQuaternion(this Vector3 v)
+        {
+            return Transform.ToQuaternion(v);
+        }
+
     }
 }
