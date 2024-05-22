@@ -104,8 +104,8 @@ public class OrbitCamera : Camera
 
     public override void Rotate(float yaw, float pitch) // angle in degrees
     {
-        float yawRadians = float.DegreesToRadians(yaw); 
-        float pitchRadians = float.DegreesToRadians(pitch); 
+        float yawRadians = float.DegreesToRadians(yaw);
+        float pitchRadians = float.DegreesToRadians(pitch);
         
         pitchRadians = float.Clamp(pitchRadians, 
             -MathF.PI / 2f + 0.1f, 

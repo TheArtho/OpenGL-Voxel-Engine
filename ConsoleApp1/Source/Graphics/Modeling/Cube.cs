@@ -3,13 +3,13 @@ using Graphics;
 using Silk.NET.OpenAL;
 using Silk.NET.OpenGL;
 
-namespace Minecraft;
+namespace Minecraft.Graphics;
 
-public class Cube
+public class CubeMesh
 {
     public float[] _vertices;
     
-    public Cube(GL gl)
+    public CubeMesh(GL gl)
     {
         _vertices =
         [
