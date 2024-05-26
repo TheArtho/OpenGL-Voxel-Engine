@@ -33,7 +33,7 @@ const ivec3 LEFT = ivec3(-1,0,0);   // 3
 const ivec3 TOP = ivec3(0,1,0);     // 4
 const ivec3 BOTTOM = ivec3(0,-1,0); // 5
 
-const vec2 uvOffsets[6] = {vec2(0, 1), vec2(0, 0), vec2(1, 1), vec2(1, 1), vec2(0, 0), vec2(1, 0)};
+const vec2 uvOffsets[6] = {vec2(0, 0), vec2(0, 1), vec2(1, 0), vec2(1, 0), vec2(0, 1), vec2(1, 1)};
 
 // Fonction pour packer voxelValue et faceID (pas utilisée pour le moment)
 int packVoxelData(uint voxelValue, uint faceID) 
