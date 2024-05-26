@@ -7,10 +7,21 @@ using Minecraft.Graphics;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
+using Silk.NET.Vulkan;
 using Silk.NET.Windowing;
+using SixLabors.ImageSharp.Processing;
+using PolygonMode = Silk.NET.OpenGL.PolygonMode;
 
 namespace Minecraft
 {
+    public struct DirectionalLight
+    {
+        public Vector3 direction;
+        public Vector3 ambient;
+        public Vector3 diffuse;
+        public Vector3 specular;
+    }
+    
     class Program
     {
         private static IWindow window;
@@ -22,10 +33,13 @@ namespace Minecraft
         private static BufferObject<float> Vbo;
         // private static BufferObject<uint> Ebo;
         private static VertexArrayObject<float, uint> Vao;
-        private static Texture Texture, Texture2;
+        private static Texture2D _texture2D, Texture2;
         private static uint ComputeTexture;
         private static Shader Shader;
+        
         private static ComputeShader computeShader;
+        private static ComputeShader meshComputeShader;
+        
         private static Material Material;
         private static Material Material2;
         
@@ -54,17 +68,13 @@ namespace Minecraft
         //private static Mesh jsonMesh;
         //private static ObjLoader objMesh;
 
-        private static ChunkMesh chunkMesh;
+        private static DirectionalLight dirLight;
+
+        private static int chunkSize = 1;
+        private static ChunkMesh[,] chunks;
         
-        private static Vector3 cubePosition = new Vector3(0, 0, 0);
+        private static Vector3 cubePosition = new Vector3(8, 8, 8);
         
-        private static readonly uint[] Indices =
-        {
-            0, 1, 3,
-            1, 2, 3
-        };
-        
-        // public static unsafe void Start()
         public static void Main(string[] args)
         {
             var options = WindowOptions.Default;
@@ -107,29 +117,34 @@ namespace Minecraft
 
             Gl = GL.GetApi(window);
             
+            // Gl.Enable(EnableCap.CullFace);
+            
             #if DEBUG
             SetupDebugCallback();
             #endif
             
             Shader = new Shader(Gl, "../../../Assets/Shaders/VoxelVertexShader.glsl", "../../../Assets/Shaders/VoxelFragmentShader.glsl");
-            Texture = new Texture(Gl, "../../../Assets/Textures/cobblestone.png");
-
-            // Compute Texture
-            ComputeTexture = Gl.GenTexture();
-            Gl.BindTexture(TextureTarget.Texture3D, ComputeTexture);
-            
-            Gl.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            Gl.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            Gl.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            Gl.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            Gl.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
-            Gl.TexImage3D(TextureTarget.Texture3D, 0, InternalFormat.R8ui, 64, 64, 64, 0, PixelFormat.RedInteger, PixelType.UnsignedInt, null);
-            Gl.BindTexture(TextureTarget.Texture3D, 0);
+            _texture2D = new Texture2D(Gl, "../../../Assets/Textures/cobblestone.png");
 
             computeShader = new ComputeShader(Gl, "../../../Assets/Shaders/VoxelComputeShader.glsl");
-            chunkMesh = new ChunkMesh(Gl, Shader);
+
+            dirLight = new DirectionalLight()
+            {
+                direction = new Vector3(-1 , -1, 0),
+                ambient = new Vector3(0.8f),
+                diffuse = new Vector3(0.8f),
+                specular = new Vector3(0.2f)
+            };
             
-            computeShader.Use(ComputeTexture, 0, 16);
+            chunks = new ChunkMesh[chunkSize,chunkSize];
+
+            for (int x = 0; x < chunks.GetLength(0); x++)
+            {
+                for (int z = 0; z < chunks.GetLength(1); z++)
+                {
+                    chunks[x,z] = new ChunkMesh(Gl, Shader, new Vector2(x, z), new Vector2(chunks.GetLength(0), chunks.GetLength(1)));
+                }
+            }
         }
 
         private static void OnUpdate(double deltaTime)
@@ -188,17 +203,20 @@ namespace Minecraft
 
         private static void OnRender(double deltaTime)
         {
-            Time += (float) deltaTime;
             orbit_camera.SetLookAt(cubePosition);
             orbit_camera.Rotate(camera.CameraYaw, camera.CameraPitch);
             orbit_camera.SetRadius(CameraRadius);
 
+            // dirLight.direction =  Vector3.Zero - camera.Position;
+
             Gl.Enable(EnableCap.DepthTest);
+            Gl.DepthFunc(DepthFunction.Lequal);
             //Gl.Enable(GLEnum.Blend);
             //Gl.BlendFunc(GLEnum.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             Gl.Clear((uint) (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
+            BackgroundColor(190, 228, 230);
             
-            computeShader.Use(ComputeTexture, (uint) (Time*1.8f), 16);
+            // Use compute shader to refresh each frame here
             
             var difference = (float) (window.Time * 100);
 
@@ -207,19 +225,21 @@ namespace Minecraft
             var view = camera.GetViewMatrix();
             var projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(camera.FieldOfView),
                 (float) size.X / size.Y, 0.1f, 500.0f);
-            
+
             Shader.Use();
-            Shader.SetUniform("uView", view);
-            Shader.SetUniform("uProjection", projection);
+            Shader.SetUniform("dirLight.direction", dirLight.direction);
+            Shader.SetUniform("dirLight.ambient", dirLight.ambient);
+            Shader.SetUniform("dirLight.diffuse", dirLight.diffuse);
+            Shader.SetUniform("dirLight.specular", dirLight.specular);
+            Shader.SetUniform("viewPos", camera.Position);
             
-            var model = Matrix4x4.CreateTranslation(cubePosition); // * Matrix4x4.CreateRotationY(MathHelper.DegreesToRadians(difference)) * Matrix4x4.CreateRotationX(MathHelper.DegreesToRadians(difference));
-            Shader.SetUniform("uModel", model);
-            
-            Gl.ActiveTexture(TextureUnit.Texture0);
-            Gl.BindTexture(TextureTarget.Texture3D, ComputeTexture);
-            Shader.SetUniform("voxelTexture", 0);
-            
-            chunkMesh.Render(ComputeTexture);
+            for (int x = 0; x < chunks.GetLength(0); x++)
+            {
+                for (int z = 0; z < chunks.GetLength(1); z++)
+                {
+                    chunks[x,z].Render(view, projection, (float) window.Time);
+                }
+            }
         }
 
         private static void OnFramebufferResize(Vector2D<int> newSize)
@@ -255,11 +275,15 @@ namespace Minecraft
         
         private static void Dispose()
         {
-            // Vbo.Dispose();
-            // Vao.Dispose();
-            chunkMesh.Dispose();
+            for (int x = 0; x < chunks.GetLength(0); x++)
+            {
+                for (int z = 0; z < chunks.GetLength(1); z++)
+                {
+                    chunks[x,z].Dispose();
+                }
+            }
             Shader.Dispose();
-            Texture.Dispose();
+            _texture2D.Dispose();
         }
 
         private static void KeyDown(IKeyboard keyboard, Key key, int arg3)
@@ -276,7 +300,7 @@ namespace Minecraft
                 wireframeMode = !wireframeMode;
                 if (wireframeMode)
                 {
-                    Gl.PolygonMode(GLEnum.FrontAndBack, PolygonMode.Line);
+                    Gl.PolygonMode((GLEnum) GLEnum.FrontAndBack, (PolygonMode) PolygonMode.Line);
                 }
                 else
                 {
@@ -313,6 +337,11 @@ namespace Minecraft
                     window.WindowState = WindowState.Fullscreen; // Bascule en mode plein écran
                 }
             }
+        }
+
+        private static void BackgroundColor(uint r, uint g, uint b)
+        {
+            Gl.ClearColor((float) r / 255, (float) g / 255, (float) b / 255, 1);
         }
         
 #if DEBUG

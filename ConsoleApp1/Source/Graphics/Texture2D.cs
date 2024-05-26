@@ -5,7 +5,7 @@ using System;
 
 namespace Minecraft
 {
-    public class Texture : IDisposable
+    public class Texture2D : IDisposable
     {
         private static uint texUnit;
 
@@ -15,14 +15,28 @@ namespace Minecraft
         private uint _handle;
         private GL _gl;
 
-        public unsafe Texture(GL gl, string path)
+        public unsafe Texture2D(GL gl, Span<byte> data, uint width, uint height)
         {
             _gl = gl;
 
             _handle = _gl.GenTexture();
             Bind(0);
 
-            using (var img = Image.Load<Rgba32>(path))
+            fixed (void* d = &data[0])
+            {
+                _gl.TexImage2D(TextureTarget.Texture2D, 0, (int) InternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, d);
+                SetParameters();
+            }
+        }
+
+        public unsafe Texture2D(GL gl, Image<Rgba32> image)
+        {
+            _gl = gl;
+
+            _handle = _gl.GenTexture();
+            Bind(0);
+
+            using (var img = image)
             {
                 gl.TexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba8, (uint) img.Width, (uint) img.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, null);
 
@@ -43,26 +57,17 @@ namespace Minecraft
 
             SetParameters();
         }
-
-        public unsafe Texture(GL gl, Span<byte> data, uint width, uint height)
+        
+        public unsafe Texture2D(GL gl, string path) : this(gl, Image.Load<Rgba32>(path))
         {
-            _gl = gl;
-
-            _handle = _gl.GenTexture();
-            Bind(texUnit++);
-
-            fixed (void* d = &data[0])
-            {
-                _gl.TexImage2D(TextureTarget.Texture2D, 0, (int) InternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, d);
-                SetParameters();
-            }
+            
         }
 
         private void SetParameters()
         {
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) GLEnum.Repeat);
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) GLEnum.Repeat);
-            _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) GLEnum.Linear);
+            _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) GLEnum.Nearest);
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int) GLEnum.Nearest);
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBaseLevel, 0);
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 8);

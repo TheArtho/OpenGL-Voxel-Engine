@@ -176,7 +176,7 @@ public class ObjLoader
     {
         _vao.Bind();
         if (material != null)
-            material.texture.Bind(0);
+            material.Texture2D.Bind(0);
         
         _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint) vertexData.Count / 5);
         _gl.BindVertexArray(0);

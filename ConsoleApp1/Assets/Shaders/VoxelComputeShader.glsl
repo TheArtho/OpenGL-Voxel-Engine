@@ -4,69 +4,99 @@ layout (local_size_x = 4, local_size_y = 4, local_size_z = 4) in;
 
 layout (r8ui, binding = 0) uniform uimage3D voxelTexture;
 
-uniform uint time = 0;
-uniform vec3 offset = vec3(0,0,0);
-
-// Voronoi 3D
-
-const mat2 myt = mat2(.12121212, .13131313, -.13131313, .12121212);
-const vec2 mys = vec2(1e4, 1e6);
-
-vec2 rhash(vec2 uv) {
-    uv *= myt;
-    uv *= mys;
-    return fract(fract(uv / mys) * uv);
-}
-
-vec3 hash(vec3 p) {
-    return fract(
-    sin(vec3(dot(p, vec3(1.0, 57.0, 113.0)), dot(p, vec3(57.0, 113.0, 1.0)),
-    dot(p, vec3(113.0, 1.0, 57.0)))) *
-    43758.5453);
-}
-
-vec3 voronoi3d(const in vec3 x) {
-    vec3 p = floor(x);
-    vec3 f = fract(x);
-
-    float id = 0.0;
-    vec2 res = vec2(100.0);
-    for (int k = -1; k <= 1; k++) {
-        for (int j = -1; j <= 1; j++) {
-            for (int i = -1; i <= 1; i++) {
-                vec3 b = vec3(float(i), float(j), float(k));
-                vec3 r = vec3(b) - f + hash(p + b);
-                float d = dot(r, r);
-
-                float cond = max(sign(res.x - d), 0.0);
-                float nCond = 1.0 - cond;
-
-                float cond2 = nCond * max(sign(res.y - d), 0.0);
-                float nCond2 = 1.0 - cond2;
-
-                id = (dot(p + b, vec3(1.0, 57.0, 113.0)) * cond) + (id * nCond);
-                res = vec2(d, res.x) * cond + res * nCond;
-
-                res.y = cond2 * d + nCond2 * res.y;
-            }
-        }
-    }
-
-    return vec3(sqrt(res), abs(id));
-}
+uniform float time;
+uniform vec3 offset;
 
 // Rand
 
-float rand(vec3 p) {
-    return fract(sin(dot(p ,vec3(127.1, 311.7, 74.7))) * 43758.5453);
+#define MAGIC 43758.5453123
+
+float random (vec2 st) {
+    float s = dot(st, vec2(0.400,0.230));
+    return -1. + 2. * fract(sin(s) * MAGIC);
+}
+
+vec2 random2(vec2 st){
+    vec2 s = vec2(
+    dot(st, vec2(127.1,311.7)),
+    dot(st, vec2(269.5,183.3))
+    );
+    return -1. + 2. * fract(sin(s) * MAGIC);
+}
+
+vec2 scale (vec2 p, float s) {
+    return p * s;
+}
+
+float interpolate (float t) {
+    //return t;
+    // return t * t * (3. - 2. * t); // smoothstep
+    return t * t * t * (10. + t * (6. * t - 15.)); // smootherstep
+}
+
+vec4 valueNoise (vec2 p) {
+    vec2 i = floor(p);
+
+    float f11 = random(i + vec2(0., 0.));
+    float f12 = random(i + vec2(0., 1.));
+    float f21 = random(i + vec2(1., 0.));
+    float f22 = random(i + vec2(1., 1.));
+
+    return vec4(f11, f12, f21, f22);
+}
+
+vec4 gradientNoise (vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+
+    float f11 = dot(random2(i + vec2(0., 0.)), f - vec2(0., 0.));
+    float f12 = dot(random2(i + vec2(0., 1.)), f - vec2(0., 1.));
+    float f21 = dot(random2(i + vec2(1., 0.)), f - vec2(1., 0.));
+    float f22 = dot(random2(i + vec2(1., 1.)), f - vec2(1., 1.));
+
+    return vec4(f11, f12, f21, f22);
+}
+
+float noise (vec2 p) {
+    vec4 v = gradientNoise(p);
+    //vec4 v = valueNoise(p);
+
+    vec2 f = fract(p);
+    float t = interpolate(f.x);
+    float u = interpolate(f.y);
+
+    // linear interpolation on t and u,
+    // the returned value belongs to [0, 1]
+    return clamp(
+        mix(
+            mix(v.x, v.z, t),
+            mix(v.y, v.w, t),
+            u
+        ) * .5 + .5, 
+    0, 1);
 }
 
 // Main Compute
 
 void main() {
     ivec3 gid = ivec3(gl_GlobalInvocationID.xyz);
-    vec3 pos = vec3(vec3(gid) + offset + time);
-    uint height = uint(rand(pos) * 255);
+    vec3 pos = vec3(vec3(gid) + offset);
+    uint height = uint(noise(pos.xz / 255.0 * 40.0 + time) * noise((pos.xz - time*5) / 255.0 * 20) * 32);    // noise between 0 and 255
 
-    imageStore(voxelTexture, gid, height.xxxx);
+    if (pos.y < 1)  // Bedrock
+    {
+        imageStore(voxelTexture, gid, uvec4(4));
+    }
+    else if (pos.y < height)    // Cobble
+    {
+        imageStore(voxelTexture, gid, uvec4(1));
+    }
+    else if (pos.y == height)   // Dirt
+    {
+        imageStore(voxelTexture, gid, uvec4(3));
+    }
+    else    // Air
+    {
+        imageStore(voxelTexture, gid, uvec4(0));
+    }
 }

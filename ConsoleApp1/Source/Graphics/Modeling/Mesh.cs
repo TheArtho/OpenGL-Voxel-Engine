@@ -125,10 +125,10 @@ public class Mesh
         
         // Front Face
         
-        X_0 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.texture.width;
-        X_1 = (uv.X + sizeUV.Z) / (float) material.texture.width;
-        Y_0 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
-        Y_1 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
+        X_0 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.Texture2D.width;
+        X_1 = (uv.X + sizeUV.Z) / (float) material.Texture2D.width;
+        Y_0 = (uv.Y + sizeUV.Z) / (float) material.Texture2D.height;
+        Y_1 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.Texture2D.height;
         
         if (mirror)
         {
@@ -159,10 +159,10 @@ public class Mesh
             );
         }
         
-        X_0 = (uv.X + sizeUV.Z*2 + sizeUV.X) / (float) material.texture.width;
-        X_1 = (uv.X + sizeUV.Z*2 + sizeUV.X*2) / (float) material.texture.width;
-        Y_0 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
-        Y_1 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
+        X_0 = (uv.X + sizeUV.Z*2 + sizeUV.X) / (float) material.Texture2D.width;
+        X_1 = (uv.X + sizeUV.Z*2 + sizeUV.X*2) / (float) material.Texture2D.width;
+        Y_0 = (uv.Y + sizeUV.Z) / (float) material.Texture2D.height;
+        Y_1 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.Texture2D.height;
         
         // Back Face
 
@@ -197,17 +197,17 @@ public class Mesh
 
         if (mirror)
         {
-            X_1 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.texture.width;
-            X_0 = (uv.X + sizeUV.X*2 + sizeUV.Z) / (float) material.texture.width;
-            Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
-            Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
+            X_1 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.Texture2D.width;
+            X_0 = (uv.X + sizeUV.X*2 + sizeUV.Z) / (float) material.Texture2D.width;
+            Y_1 = (uv.Y + sizeUV.Z) / (float) material.Texture2D.height;
+            Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.Texture2D.height;
         }
         else
         {
-            X_0 = (uv.X) / (float) material.texture.width;
-            X_1 = (uv.X + sizeUV.X) / (float) material.texture.width;
-            Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
-            Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
+            X_0 = (uv.X) / (float) material.Texture2D.width;
+            X_1 = (uv.X + sizeUV.X) / (float) material.Texture2D.width;
+            Y_1 = (uv.Y + sizeUV.Z) / (float) material.Texture2D.height;
+            Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.Texture2D.height;
         }
         
         cubeData.faces.Add(new List<float>
@@ -225,17 +225,17 @@ public class Mesh
 
         if (mirror)
         {
-            X_0 = (uv.X) / (float) material.texture.width;
-            X_1 = (uv.X + sizeUV.X) / (float) material.texture.width;
-            Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
-            Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
+            X_0 = (uv.X) / (float) material.Texture2D.width;
+            X_1 = (uv.X + sizeUV.X) / (float) material.Texture2D.width;
+            Y_1 = (uv.Y + sizeUV.Z) / (float) material.Texture2D.height;
+            Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.Texture2D.height;
         }
         else
         {
-            X_1 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.texture.width;
-            X_0 = (uv.X + sizeUV.X*2 + sizeUV.Z) / (float) material.texture.width;
-            Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
-            Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.texture.height;
+            X_1 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.Texture2D.width;
+            X_0 = (uv.X + sizeUV.X*2 + sizeUV.Z) / (float) material.Texture2D.width;
+            Y_1 = (uv.Y + sizeUV.Z) / (float) material.Texture2D.height;
+            Y_0 = (uv.Y + sizeUV.Z + sizeUV.Y) / (float) material.Texture2D.height;
         }
 
         cubeData.faces.Add(new List<float>
@@ -251,10 +251,10 @@ public class Mesh
         
         // Bottom Face
         
-        X_0 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.texture.width;
-        X_1 = (uv.X + sizeUV.X*2 + sizeUV.Z) / (float) material.texture.width;
-        Y_0 = (uv.Y) / (float) material.texture.height;
-        Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
+        X_0 = (uv.X + sizeUV.Z + sizeUV.X) / (float) material.Texture2D.width;
+        X_1 = (uv.X + sizeUV.X*2 + sizeUV.Z) / (float) material.Texture2D.width;
+        Y_0 = (uv.Y) / (float) material.Texture2D.height;
+        Y_1 = (uv.Y + sizeUV.Z) / (float) material.Texture2D.height;
 
         if (mirror)
         {
@@ -286,10 +286,10 @@ public class Mesh
         
         // Top Face
         
-        X_0 = (uv.X + sizeUV.X + sizeUV.Z) / (float) material.texture.width;
-        X_1 = (uv.X + sizeUV.Z) / (float) material.texture.width;
-        Y_0 = (uv.Y) / (float) material.texture.height;
-        Y_1 = (uv.Y + sizeUV.Z) / (float) material.texture.height;
+        X_0 = (uv.X + sizeUV.X + sizeUV.Z) / (float) material.Texture2D.width;
+        X_1 = (uv.X + sizeUV.Z) / (float) material.Texture2D.width;
+        Y_0 = (uv.Y) / (float) material.Texture2D.height;
+        Y_1 = (uv.Y + sizeUV.Z) / (float) material.Texture2D.height;
 
         if (mirror)
         {
@@ -473,7 +473,7 @@ public class Mesh
             foreach (var face in cube.faces)
             {
                 _vaos[i].Bind();
-                material.texture.Bind(0);
+                material.Texture2D.Bind(0);
                 
                 newModel = ApplyTransformRecursive(cube) * model * Matrix4x4.CreateScale(scale);
                 

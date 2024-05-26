@@ -18,9 +18,7 @@ namespace Minecraft
             _gl = gl;
             
             uint compute = LoadShader(ShaderType.ComputeShader, path);
-            Console.WriteLine(compute);
             _handle = _gl.CreateProgram();
-            Console.WriteLine(_handle);
             _gl.AttachShader(_handle, compute);
             _gl.LinkProgram(_handle);
             _gl.GetProgram(_handle, GLEnum.LinkStatus, out var status);
@@ -32,31 +30,14 @@ namespace Minecraft
             _gl.DeleteShader(compute);
         }
 
-        public void Use(uint texture, uint time, uint size)
+        public void Use()
         {
             _gl.UseProgram(_handle);
-            
-            SetUniform("time",time);
-            
-            _gl.BindTexture(TextureTarget.Texture3D, texture);
-            _gl.BindImageTexture (0, texture, 0, false, 0, GLEnum.WriteOnly, InternalFormat.R8ui);
-            
-            _gl.DispatchCompute(size,size, size);
-            _gl.MemoryBarrier(MemoryBarrierMask.ShaderImageAccessBarrierBit);
-            
-            _gl.BindImageTexture (0, 0, 0, false, 0, GLEnum.WriteOnly, InternalFormat.R8ui);
-            _gl.BindTexture(TextureTarget.Texture3D, 0);
-            _gl.UseProgram(0);
         }
 
-        public void SetUniform(string name, int value)
+        public void Unbind()
         {
-            int location = _gl.GetUniformLocation(_handle, name);
-            if (location == -1)
-            {
-                throw new Exception($"{name} uniform not found on shader.");
-            }
-            _gl.Uniform1(location, value);
+            _gl.UseProgram(0);
         }
         
         public unsafe void SetUniform(string name, Vector2 value)
@@ -144,3 +125,4 @@ namespace Minecraft
         }
     }
 }
+

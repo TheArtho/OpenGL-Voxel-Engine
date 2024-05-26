@@ -12,7 +12,7 @@ public class Renderer
     private BufferObject<float> Vbo;
     // private static BufferObject<uint> Ebo;
     private VertexArrayObject<float, uint> Vao;
-    private Texture Texture, Texture2;
+    private Texture2D _texture2D, Texture2;
     private Shader Shader;
 
     public Renderer(GL gl, IWindow window)
@@ -67,6 +67,6 @@ public class Renderer
         // Ebo.Dispose();
         Vao.Dispose();
         Shader.Dispose();
-        Texture.Dispose();
+        _texture2D.Dispose();
     }
 }

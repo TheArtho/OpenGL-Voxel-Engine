@@ -16,4 +16,8 @@
       <PackageReference Include="StbImageSharp" Version="2.27.14" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Assets\Textures\Skybox\" />
+    </ItemGroup>
+
 </Project>
