@@ -9,15 +9,21 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="MathNet.Numerics" Version="6.0.0-beta1" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="Silk.NET" Version="2.21.0" />
+      <PackageReference Include="Silk.NET.Assimp" Version="2.21.0" />
       <PackageReference Include="Silk.NET.Core" Version="2.21.0" />
+      <PackageReference Include="Silk.NET.OpenGL.Extensions.ImGui" Version="2.21.0" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
       <PackageReference Include="StbImageSharp" Version="2.27.14" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Assets\Textures\Skybox\" />
+      <Folder Include="Assets\Models\" />
+      <Folder Include="Assets\Textures\Blocks\" />
+      <Folder Include="Assets\Textures\Environment\" />
+      <Folder Include="Source\Scenes\" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,38 @@
+﻿[
+  {
+    "blockID" : 0,
+    "reference" : "air"
+  },
+  {
+    "blockID" : 1,
+    "reference" : "dirt"
+  },
+  {
+    "blockID" : 2,
+    "reference" : "grass"
+  },
+  {
+    "blockID" : 3,
+    "reference" : "stone"
+  },
+  {
+    "blockID" : 4,
+    "reference" : "bedrock"
+  },
+  {
+    "blockID" : 5,
+    "reference" : "sand"
+  },
+  {
+    "blockID" : 6,
+    "reference" : "wood"
+  },
+  {
+    "blockID" : 7,
+    "reference" : "water"
+  },
+  {
+    "blockID" : 8,
+    "reference" : "leaves"
+  }
+]

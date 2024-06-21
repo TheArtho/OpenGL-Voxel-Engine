@@ -2,6 +2,59 @@
   "version": 3,
   "targets": {
     "net8.0": {
+      "ImGui.NET/1.89.9.3": {
+        "type": "package",
+        "dependencies": {
+          "System.Buffers": "4.4.0",
+          "System.Numerics.Vectors": "4.4.0",
+          "System.Runtime.CompilerServices.Unsafe": "4.4.0"
+        },
+        "compile": {
+          "lib/net6.0/ImGui.NET.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/ImGui.NET.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/linux-x64/native/libcimgui.so": {
+            "assetType": "native",
+            "rid": "linux-x64"
+          },
+          "runtimes/osx/native/libcimgui.dylib": {
+            "assetType": "native",
+            "rid": "osx"
+          },
+          "runtimes/win-arm64/native/cimgui.dll": {
+            "assetType": "native",
+            "rid": "win-arm64"
+          },
+          "runtimes/win-x64/native/cimgui.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x86/native/cimgui.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          }
+        }
+      },
+      "MathNet.Numerics/6.0.0-beta1": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/MathNet.Numerics.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/MathNet.Numerics.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.CSharp/4.7.0": {
         "type": "package",
         "compile": {
@@ -70,6 +123,24 @@
           "Silk.NET.Windowing": "2.21.0"
         }
       },
+      "Silk.NET.Assimp/2.21.0": {
+        "type": "package",
+        "dependencies": {
+          "Silk.NET.Core": "2.21.0",
+          "Silk.NET.Maths": "2.21.0",
+          "Ultz.Native.Assimp": "5.3.1.1"
+        },
+        "compile": {
+          "lib/net5.0/Silk.NET.Assimp.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net5.0/Silk.NET.Assimp.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Silk.NET.Core/2.21.0": {
         "type": "package",
         "dependencies": {
@@ -128,6 +199,22 @@
         },
         "runtime": {
           "lib/net5.0/Silk.NET.Input.Common.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Silk.NET.Input.Extensions/2.21.0": {
+        "type": "package",
+        "dependencies": {
+          "Silk.NET.Input.Common": "2.21.0"
+        },
+        "compile": {
+          "lib/net5.0/Silk.NET.Input.Extensions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net5.0/Silk.NET.Input.Extensions.dll": {
             "related": ".xml"
           }
         }
@@ -210,6 +297,26 @@
         },
         "runtime": {
           "lib/net5.0/Silk.NET.OpenGL.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Silk.NET.OpenGL.Extensions.ImGui/2.21.0": {
+        "type": "package",
+        "dependencies": {
+          "ImGui.NET": "1.89.9.3",
+          "Silk.NET.Input.Common": "2.21.0",
+          "Silk.NET.Input.Extensions": "2.21.0",
+          "Silk.NET.OpenGL": "2.21.0",
+          "Silk.NET.Windowing.Common": "2.21.0"
+        },
+        "compile": {
+          "lib/net5.0/Silk.NET.OpenGL.Extensions.ImGui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net5.0/Silk.NET.OpenGL.Extensions.ImGui.dll": {
             "related": ".xml"
           }
         }
@@ -435,6 +542,49 @@
           "buildTransitive/net6.0/System.Text.Json.targets": {}
         }
       },
+      "Ultz.Native.Assimp/5.3.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/_._": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/_._": {}
+        },
+        "runtimeTargets": {
+          "runtimes/linux-arm/native/libassimp.so.5": {
+            "assetType": "native",
+            "rid": "linux-arm"
+          },
+          "runtimes/linux-arm64/native/libassimp.so.5": {
+            "assetType": "native",
+            "rid": "linux-arm64"
+          },
+          "runtimes/linux-x64/native/libassimp.so.5": {
+            "assetType": "native",
+            "rid": "linux-x64"
+          },
+          "runtimes/osx-arm64/native/libassimp.5.dylib": {
+            "assetType": "native",
+            "rid": "osx-arm64"
+          },
+          "runtimes/osx-x64/native/libassimp.5.dylib": {
+            "assetType": "native",
+            "rid": "osx-x64"
+          },
+          "runtimes/win-arm64/native/Assimp64.dll": {
+            "assetType": "native",
+            "rid": "win-arm64"
+          },
+          "runtimes/win-x64/native/Assimp64.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x86/native/Assimp32.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          }
+        }
+      },
       "Ultz.Native.GLFW/3.4.0": {
         "type": "package",
         "compile": {
@@ -539,6 +689,47 @@
     }
   },
   "libraries": {
+    "ImGui.NET/1.89.9.3": {
+      "sha512": "KDU6oYAju/c1JR5gP23Ea+FUR62J3AvoDB5zlKHCALi3u5sGBmdFcSOE6bg8DJeGgzluWOS5IO/MhJtrGdkNKw==",
+      "type": "package",
+      "path": "imgui.net/1.89.9.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/net40/ImGui.NET.targets",
+        "imgui.net.1.89.9.3.nupkg.sha512",
+        "imgui.net.nuspec",
+        "lib/net6.0/ImGui.NET.dll",
+        "lib/net6.0/ImGui.NET.xml",
+        "lib/netstandard2.0/ImGui.NET.dll",
+        "lib/netstandard2.0/ImGui.NET.xml",
+        "runtimes/linux-x64/native/libcimgui.so",
+        "runtimes/osx/native/libcimgui.dylib",
+        "runtimes/win-arm64/native/cimgui.dll",
+        "runtimes/win-x64/native/cimgui.dll",
+        "runtimes/win-x86/native/cimgui.dll"
+      ]
+    },
+    "MathNet.Numerics/6.0.0-beta1": {
+      "sha512": "GTwwNScDIL5+EvU6bN9+TP8bEbhcgR0hnVLZTriwSlXtzYU1h5EPpN58iojejeN/puC1+CVSoeuWNFhERkg71g==",
+      "type": "package",
+      "path": "mathnet.numerics/6.0.0-beta1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "icon.png",
+        "lib/net48/MathNet.Numerics.dll",
+        "lib/net48/MathNet.Numerics.xml",
+        "lib/net6.0/MathNet.Numerics.dll",
+        "lib/net6.0/MathNet.Numerics.xml",
+        "lib/net8.0/MathNet.Numerics.dll",
+        "lib/net8.0/MathNet.Numerics.xml",
+        "lib/netstandard2.0/MathNet.Numerics.dll",
+        "lib/netstandard2.0/MathNet.Numerics.xml",
+        "mathnet.numerics.6.0.0-beta1.nupkg.sha512",
+        "mathnet.numerics.nuspec"
+      ]
+    },
     "Microsoft.CSharp/4.7.0": {
       "sha512": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA==",
       "type": "package",
@@ -701,6 +892,27 @@
         "silkdotnet_v3.png"
       ]
     },
+    "Silk.NET.Assimp/2.21.0": {
+      "sha512": "OnwatGzQs6mKS8MN6InwSIy14PRmfVU6wIw69TX5XrUA8I4OeGl1xanigFe9prcc0VQbn4g3JtmCyMsTKS0DIA==",
+      "type": "package",
+      "path": "silk.net.assimp/2.21.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/net5.0/Silk.NET.Assimp.dll",
+        "lib/net5.0/Silk.NET.Assimp.xml",
+        "lib/netcoreapp3.1/Silk.NET.Assimp.dll",
+        "lib/netcoreapp3.1/Silk.NET.Assimp.xml",
+        "lib/netstandard2.0/Silk.NET.Assimp.dll",
+        "lib/netstandard2.0/Silk.NET.Assimp.xml",
+        "lib/netstandard2.1/Silk.NET.Assimp.dll",
+        "lib/netstandard2.1/Silk.NET.Assimp.xml",
+        "silk.net.assimp.2.21.0.nupkg.sha512",
+        "silk.net.assimp.nuspec",
+        "silkdotnet_v3.png"
+      ]
+    },
     "Silk.NET.Core/2.21.0": {
       "sha512": "U8gATeEGvSIc1ogSdG/LKr6SLgOjkis7Oo/QzCq+aOoGjw4tHYRVpm02V+pHp/qlQhziBbdQ/Vl5d58cmFY+PA==",
       "type": "package",
@@ -776,6 +988,27 @@
         "lib/netstandard2.1/Silk.NET.Input.Common.xml",
         "silk.net.input.common.2.21.0.nupkg.sha512",
         "silk.net.input.common.nuspec",
+        "silkdotnet_v3.png"
+      ]
+    },
+    "Silk.NET.Input.Extensions/2.21.0": {
+      "sha512": "QX8zaap2rxxDPRw0eSHewic36f9oiFVWod4cazQmQzrYCftv5A10T6vzdUzfIbh+F975W+kpYY6rH+KHmBS0+g==",
+      "type": "package",
+      "path": "silk.net.input.extensions/2.21.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/net5.0/Silk.NET.Input.Extensions.dll",
+        "lib/net5.0/Silk.NET.Input.Extensions.xml",
+        "lib/netcoreapp3.1/Silk.NET.Input.Extensions.dll",
+        "lib/netcoreapp3.1/Silk.NET.Input.Extensions.xml",
+        "lib/netstandard2.0/Silk.NET.Input.Extensions.dll",
+        "lib/netstandard2.0/Silk.NET.Input.Extensions.xml",
+        "lib/netstandard2.1/Silk.NET.Input.Extensions.dll",
+        "lib/netstandard2.1/Silk.NET.Input.Extensions.xml",
+        "silk.net.input.extensions.2.21.0.nupkg.sha512",
+        "silk.net.input.extensions.nuspec",
         "silkdotnet_v3.png"
       ]
     },
@@ -885,6 +1118,27 @@
         "lib/netstandard2.1/Silk.NET.OpenGL.xml",
         "silk.net.opengl.2.21.0.nupkg.sha512",
         "silk.net.opengl.nuspec",
+        "silkdotnet_v3.png"
+      ]
+    },
+    "Silk.NET.OpenGL.Extensions.ImGui/2.21.0": {
+      "sha512": "zWJ0Cpzj8rOc/uPVw+8rqw76fe2Tw+Wc+aHGEzxlXk6p1neCcrGXhzU6WTzjz+vSkTKCuLrajFGIsfVUZT8cWQ==",
+      "type": "package",
+      "path": "silk.net.opengl.extensions.imgui/2.21.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/net5.0/Silk.NET.OpenGL.Extensions.ImGui.dll",
+        "lib/net5.0/Silk.NET.OpenGL.Extensions.ImGui.xml",
+        "lib/netcoreapp3.1/Silk.NET.OpenGL.Extensions.ImGui.dll",
+        "lib/netcoreapp3.1/Silk.NET.OpenGL.Extensions.ImGui.xml",
+        "lib/netstandard2.0/Silk.NET.OpenGL.Extensions.ImGui.dll",
+        "lib/netstandard2.0/Silk.NET.OpenGL.Extensions.ImGui.xml",
+        "lib/netstandard2.1/Silk.NET.OpenGL.Extensions.ImGui.dll",
+        "lib/netstandard2.1/Silk.NET.OpenGL.Extensions.ImGui.xml",
+        "silk.net.opengl.extensions.imgui.2.21.0.nupkg.sha512",
+        "silk.net.opengl.extensions.imgui.nuspec",
         "silkdotnet_v3.png"
       ]
     },
@@ -1305,6 +1559,30 @@
         "useSharedDesignerContext.txt"
       ]
     },
+    "Ultz.Native.Assimp/5.3.1.1": {
+      "sha512": "uXB7zMDwhXN75ODLBgsCfVfemH6HKJ8i2s8Y7ZxuKoQcfZf0LNpqHP8z6Ma/kH1gdSYiX+m13ZmHZqamnHifZA==",
+      "type": "package",
+      "path": "ultz.native.assimp/5.3.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "build/net461/Ultz.Native.Assimp.targets",
+        "lib/net461/_._",
+        "lib/netstandard2.0/_._",
+        "runtimes/linux-arm/native/libassimp.so.5",
+        "runtimes/linux-arm64/native/libassimp.so.5",
+        "runtimes/linux-x64/native/libassimp.so.5",
+        "runtimes/osx-arm64/native/libassimp.5.dylib",
+        "runtimes/osx-x64/native/libassimp.5.dylib",
+        "runtimes/win-arm64/native/Assimp64.dll",
+        "runtimes/win-x64/native/Assimp64.dll",
+        "runtimes/win-x86/native/Assimp32.dll",
+        "silkdotnet_v3.png",
+        "ultz.native.assimp.5.3.1.1.nupkg.sha512",
+        "ultz.native.assimp.nuspec"
+      ]
+    },
     "Ultz.Native.GLFW/3.4.0": {
       "sha512": "Iy22JopynbOJ32vA0lBhFEzGi65GQJBuJHYBYRBpydrDpNoTiHnjIXfA65Gu+8qsOr/ZEoIF8r9aHCgAXuO6DA==",
       "type": "package",
@@ -1360,16 +1638,18 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "MathNet.Numerics >= 6.0.0-beta1",
       "Newtonsoft.Json >= 13.0.3",
       "Silk.NET >= 2.21.0",
+      "Silk.NET.Assimp >= 2.21.0",
       "Silk.NET.Core >= 2.21.0",
+      "Silk.NET.OpenGL.Extensions.ImGui >= 2.21.0",
       "SixLabors.ImageSharp >= 3.1.4",
       "StbImageSharp >= 2.27.14"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\artho\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\artho\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -1380,19 +1660,13 @@
       "packagesPath": "C:\\Users\\artho\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\artho\\Documents\\OpenGL\\OpenGL-Voxel-Engine\\ConsoleApp1\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\artho\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\artho\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1411,6 +1685,10 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
+          "MathNet.Numerics": {
+            "target": "Package",
+            "version": "[6.0.0-beta1, )"
+          },
           "Newtonsoft.Json": {
             "target": "Package",
             "version": "[13.0.3, )"
@@ -1419,7 +1697,15 @@
             "target": "Package",
             "version": "[2.21.0, )"
           },
+          "Silk.NET.Assimp": {
+            "target": "Package",
+            "version": "[2.21.0, )"
+          },
           "Silk.NET.Core": {
+            "target": "Package",
+            "version": "[2.21.0, )"
+          },
+          "Silk.NET.OpenGL.Extensions.ImGui": {
             "target": "Package",
             "version": "[2.21.0, )"
           },
@@ -1448,7 +1734,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

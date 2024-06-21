@@ -1,6 +1,6 @@
 ﻿using Minecraft;
 
-namespace ConsoleApp1.Source.Graphics;
+namespace Minecraft.Graphics;
 
 public class Material
 {

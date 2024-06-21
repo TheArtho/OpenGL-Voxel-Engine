@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
+using Graphics;
 using Silk.NET.Input;
 using Silk.NET.Vulkan;
 using SixLabors.ImageSharp.Processing;
 
-namespace Minecraft;
+namespace Minecraft.Graphics;
 
 public class Camera
 {
@@ -15,7 +16,7 @@ public class Camera
     
     //Used to track change in mouse movement to allow for moving of the Camera
     private static Vector2 LastMousePosition;
-    public float CameraYaw = -90f;
+    public float CameraYaw = -90;
     public float CameraPitch = 0f;
 
     public float FieldOfView
@@ -23,6 +24,9 @@ public class Camera
         get => _fov;
         set => _fov = float.Clamp(value, 1, 100);
     }
+
+    public float nearClipPlane = 0.1f;
+    public float farClipPlane = 500f;
     
     protected float yaw;
     protected float pitch;
@@ -38,6 +42,12 @@ public class Camera
     public virtual Matrix4x4 GetViewMatrix()
     {
         return Matrix4x4.CreateLookAt(Position, Position + Front, World.Up);
+    }
+
+    public Matrix4x4 GetProjectionMatrix()
+    {
+        return Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(FieldOfView),
+            (float) Program.window.FramebufferSize.X / Program.window.FramebufferSize.Y, 0.1f, 2000.0f);
     }
 
     /// <summary>
@@ -90,6 +100,7 @@ public class OrbitCamera : Camera
     public OrbitCamera() : base()
     {
         radius = 10f;
+        CameraYaw = 45f;
     }
 
     public void SetLookAt(Vector3 target)

@@ -6,7 +6,7 @@ public class GameObject
 {
     public Transform transform { get; private set; }
     public string name;
-    public Mesh mesh;
+    public GeoJsonLoader GeoJsonLoader;
 
     public GameObject()
     {

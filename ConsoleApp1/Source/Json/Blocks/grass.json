@@ -1,0 +1,11 @@
+﻿{
+  "isMultiFace" : true,
+  "faces" : {
+    "front" : 2,
+    "back" : 2,
+    "right" : 2,
+    "left" : 2,
+    "top" : 3,
+    "bottom" : 1
+  }
+}

@@ -2,7 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using Graphics;
 using Minecraft;
+using Minecraft.Graphics;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;

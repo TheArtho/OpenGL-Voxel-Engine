@@ -1,16 +1,23 @@
+using System.Net.Mime;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using ConsoleApp1.Source.Graphics;
-using ConsoleApp1.Source.Mesh;
-using Graphics;
+using ImGuiNET;
+using Minecraft.Core;
+using Minecraft.Game;
 using Minecraft.Graphics;
+using Minecraft.Utils;
+using Newtonsoft.Json;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
+using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Vulkan;
 using Silk.NET.Windowing;
 using SixLabors.ImageSharp.Processing;
+using StbImageSharp;
+using BlockData = Minecraft.JsonData.BlockData;
 using PolygonMode = Silk.NET.OpenGL.PolygonMode;
+using World = Graphics.World;
 
 namespace Minecraft
 {
@@ -24,20 +31,16 @@ namespace Minecraft
     
     class Program
     {
-        private static IWindow window;
+        public static IWindow window;
         private static GL Gl;
         private static IKeyboard primaryKeyboard;
+        private static ImGuiController imguiController;
         
-        private static Renderer renderer; // TODO move the rendering part to this class
+        private static Renderer renderer;
         
-        private static BufferObject<float> Vbo;
-        // private static BufferObject<uint> Ebo;
-        private static VertexArrayObject<float, uint> Vao;
-        private static Texture2D _texture2D, Texture2;
         private static uint ComputeTexture;
-        private static Shader Shader;
+        private static Shader unlitColorShader;
         
-        private static ComputeShader computeShader;
         private static ComputeShader meshComputeShader;
         
         private static Material Material;
@@ -46,11 +49,12 @@ namespace Minecraft
         //Setup the camera's location, directions, and movement speed
         private static FPSCamera fps_camera = new FPSCamera();
         private static OrbitCamera orbit_camera = new OrbitCamera();
-        private static Camera camera = fps_camera;
 
         private static float Time;
         
         private static bool wireframeMode;
+
+        private static Game.World world;
         
         private enum ViewMode
         {
@@ -61,7 +65,7 @@ namespace Minecraft
         private static ViewMode viewMode = ViewMode.FirstPerson;
         
         private static float CameraZoom = 45f;
-        private static float CameraRadius = 10f;
+        private static float CameraRadius = 80f;
         
         // Cube
         // private static Cube cubeMesh = new Cube(Gl);
@@ -70,10 +74,21 @@ namespace Minecraft
 
         private static DirectionalLight dirLight;
 
-        private static int chunkSize = 1;
+        private static int chunkSize = 6;
         private static ChunkMesh[,] chunks;
+        private static CubeGeometry cube;
         
         private static Vector3 cubePosition = new Vector3(8, 8, 8);
+        
+        private static List<Vector3> lightPositions;
+        private static List<Vector3> lightColors;
+
+        private static float lightQuadratic;
+        private static float lightLinear;
+        private static float lightOffset;
+
+        private static float moveSpeed = 6;
+        
         
         public static void Main(string[] args)
         {
@@ -87,7 +102,6 @@ namespace Minecraft
             options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, flags, new APIVersion(4, 6));
             options.PreferredDepthBufferBits = 24;
             window = Window.Create(options);
-            renderer = new Renderer(Gl, window);
 
             window.Load += OnLoad;
             window.Update += OnUpdate;
@@ -96,7 +110,7 @@ namespace Minecraft
             window.Closing += OnClose;
             
             window.Run();
-
+            
             window.Dispose();
         }
 
@@ -116,140 +130,146 @@ namespace Minecraft
             }
 
             Gl = GL.GetApi(window);
+
+            Engine.MainCamera = fps_camera;
             
-            // Gl.Enable(EnableCap.CullFace);
+            imguiController = new ImGuiController(Gl, window, input);
             
+            /*
             #if DEBUG
             SetupDebugCallback();
             #endif
+            */
             
-            Shader = new Shader(Gl, "../../../Assets/Shaders/VoxelVertexShader.glsl", "../../../Assets/Shaders/VoxelFragmentShader.glsl");
-            _texture2D = new Texture2D(Gl, "../../../Assets/Textures/cobblestone.png");
-
-            computeShader = new ComputeShader(Gl, "../../../Assets/Shaders/VoxelComputeShader.glsl");
-
-            dirLight = new DirectionalLight()
+            // Instantiate the block database
+            List<Minecraft.JsonData.Block> blocks = JsonConvert.DeserializeObject<List<Minecraft.JsonData.Block>>(File.ReadAllText(AssetPaths.blockListPath));
+            foreach (var block in blocks)
             {
-                direction = new Vector3(-1 , -1, 0),
-                ambient = new Vector3(0.8f),
-                diffuse = new Vector3(0.8f),
-                specular = new Vector3(0.2f)
-            };
-            
-            chunks = new ChunkMesh[chunkSize,chunkSize];
+                BlockData blockData = JsonConvert.DeserializeObject<BlockData>(File.ReadAllText($"{AssetPaths.blockData}/{block.Reference}.json"));
 
-            for (int x = 0; x < chunks.GetLength(0); x++)
-            {
-                for (int z = 0; z < chunks.GetLength(1); z++)
-                {
-                    chunks[x,z] = new ChunkMesh(Gl, Shader, new Vector2(x, z), new Vector2(chunks.GetLength(0), chunks.GetLength(1)));
-                }
+                Game.BlockData b = new Game.BlockData((uint) block.BlockID, blockData);
             }
+
+            Game.BlockData.SetFaceBlockDataArray();
+            
+            cube = new CubeGeometry(Gl);
+            
+            world = new Game.World(Gl, 0);
+
+            renderer = new Renderer(Gl, window, Engine.MainCamera);
+            renderer.world = world;
+
+            Engine.MainCamera.Position = new Vector3(8, Chunk.kDefaultChunkHeight, 20);
         }
 
         private static void OnUpdate(double deltaTime)
         {
-            var moveSpeed = 6f * (float) deltaTime;
+            Vector3 cameraPosition = Engine.MainCamera.Position;
             
-            // camera.Rotate(0,0);
+            var speed = moveSpeed * (float) deltaTime;
 
             if (primaryKeyboard.IsKeyPressed(Key.W))
             {
                 //Move forwards
-                camera.Position += camera.Front * moveSpeed;
+                Engine.MainCamera.Position += Engine.MainCamera.Front * speed;
             }
             if (primaryKeyboard.IsKeyPressed(Key.S))
             {
                 //Move backwards
-                camera.Position -= camera.Front * moveSpeed;
+                Engine.MainCamera.Position -= Engine.MainCamera.Front * speed;
             }
             if (primaryKeyboard.IsKeyPressed(Key.A))
             {
                 //Move left
-                camera.Position -= Vector3.Normalize(Vector3.Cross(camera.Front, World.Up)) * moveSpeed;
+                Engine.MainCamera.Position -= Vector3.Normalize(Vector3.Cross(Engine.MainCamera.Front, World.Up)) * speed;
             }
             if (primaryKeyboard.IsKeyPressed(Key.D))
             {
                 //Move right
-                camera.Position += Vector3.Normalize(Vector3.Cross(camera.Front, World.Up)) * moveSpeed;
+                Engine.MainCamera.Position += Vector3.Normalize(Vector3.Cross(Engine.MainCamera.Front, World.Up)) * speed;
             }
             if (primaryKeyboard.IsKeyPressed(Key.E))
             {
-                Vector3 right = Vector3.Normalize(Vector3.Cross(camera.Front, World.Up));
+                Vector3 right = Vector3.Normalize(Vector3.Cross(Engine.MainCamera.Front, World.Up));
                 
                 //Move upward
-                camera.Position += Vector3.Normalize(Vector3.Cross(right, camera.Front)) * moveSpeed;
+                Engine.MainCamera.Position += Vector3.Normalize(Vector3.Cross(right, Engine.MainCamera.Front)) * speed;
             }
             if (primaryKeyboard.IsKeyPressed(Key.Q))
             {
-                Vector3 right = Vector3.Normalize(Vector3.Cross(camera.Front, World.Up));
+                Vector3 right = Vector3.Normalize(Vector3.Cross(Engine.MainCamera.Front, World.Up));
                 
                 //Move downward
-                camera.Position -= Vector3.Normalize(Vector3.Cross(right, camera.Front)) * moveSpeed;
+                Engine.MainCamera.Position -= Vector3.Normalize(Vector3.Cross(right, Engine.MainCamera.Front)) * speed;
             }
             
             if (primaryKeyboard.IsKeyPressed(Key.Up))
             {
                 // Zooms
-                camera.SetFov(0.5f);
+                Engine.MainCamera.SetFov(0.5f);
             }
             else if (primaryKeyboard.IsKeyPressed(Key.Down))
             {
-                camera.SetFov(-0.5f);
+                Engine.MainCamera.SetFov(-0.5f);
             }
             
-            //Console.WriteLine($"{camera.transform.Position} {camera.transform.Rotation}");
+            imguiController.Update((float)deltaTime);
+
+            if (!Game.World.PositionsEquals(cameraPosition, Engine.MainCamera.Position))
+            {
+                world.needChunkUpdate = true;
+            }
         }
 
         private static void OnRender(double deltaTime)
         {
-            orbit_camera.SetLookAt(cubePosition);
-            orbit_camera.Rotate(camera.CameraYaw, camera.CameraPitch);
-            orbit_camera.SetRadius(CameraRadius);
-
-            // dirLight.direction =  Vector3.Zero - camera.Position;
-
-            Gl.Enable(EnableCap.DepthTest);
-            Gl.DepthFunc(DepthFunction.Lequal);
-            //Gl.Enable(GLEnum.Blend);
-            //Gl.BlendFunc(GLEnum.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            Gl.Clear((uint) (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
-            BackgroundColor(190, 228, 230);
-            
-            // Use compute shader to refresh each frame here
-            
-            var difference = (float) (window.Time * 100);
-
-            var size = window.FramebufferSize;
-            
-            var view = camera.GetViewMatrix();
-            var projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(camera.FieldOfView),
-                (float) size.X / size.Y, 0.1f, 500.0f);
-
-            Shader.Use();
-            Shader.SetUniform("dirLight.direction", dirLight.direction);
-            Shader.SetUniform("dirLight.ambient", dirLight.ambient);
-            Shader.SetUniform("dirLight.diffuse", dirLight.diffuse);
-            Shader.SetUniform("dirLight.specular", dirLight.specular);
-            Shader.SetUniform("viewPos", camera.Position);
-            
-            for (int x = 0; x < chunks.GetLength(0); x++)
+            if (world.needChunkUpdate)
             {
-                for (int z = 0; z < chunks.GetLength(1); z++)
-                {
-                    chunks[x,z].Render(view, projection, (float) window.Time);
-                }
+                world.UpdateLODs();
+                world.needChunkUpdate = false;
             }
+            
+            orbit_camera.SetLookAt(cubePosition + global::Graphics.World.Up * ((float) Chunk.kDefaultChunkHeight / 2));
+            orbit_camera.Rotate(Engine.MainCamera.CameraYaw, Engine.MainCamera.CameraPitch);
+            orbit_camera.SetRadius(CameraRadius);
+            
+            renderer.OnRender();
+        }
+
+        private static void ImGuiRender()
+        {
+            imguiController.Render();
+        
+            ImGui.Begin("Settings");
+            
+            if (ImGui.SliderFloat("Quadratic", ref lightQuadratic, 0.0f, 5.0f))
+            {
+                 
+            }
+
+            if (ImGui.SliderFloat("Linear", ref lightLinear, 0.0f, 5.0f))
+            {
+               
+            }
+
+            if (ImGui.SliderFloat("Offset Y", ref lightOffset, -10, 10))
+            {
+                
+            }
+
+            ImGui.End();
         }
 
         private static void OnFramebufferResize(Vector2D<int> newSize)
         {
-            Gl.Viewport(newSize);
+            renderer.RefreshFramebuffer(newSize);
+            
+            Gl.Viewport(0, 0, (uint) newSize.X, (uint) newSize.Y);
         }
 
         private static void OnMouseMove(IMouse mouse, Vector2 position)
         {
-            camera.OnMouseMove(mouse, position);
+            Engine.MainCamera.OnMouseMove(mouse, position);
         }
 
         private static void OnMouseWheel(IMouse mouse, ScrollWheel scrollWheel)
@@ -258,12 +278,12 @@ namespace Minecraft
             {
                 case ViewMode.FirstPerson:
                     //We don't want to be able to zoom in too close or too far away so clamp to these values
-                    camera.SetFov(scrollWheel.Y);
+                    moveSpeed = float.Clamp(moveSpeed + scrollWheel.Y, 1, 100);
+                    // Engine.MainCamera.SetFov(scrollWheel.Y);
                     break;
                 case ViewMode.Orbit:
                     CameraRadius -= scrollWheel.Y * 2;
                     CameraRadius = Math.Clamp(CameraRadius, 0.5f, 99);
-                    //Console.WriteLine(CameraRadius);
                     break;
             }
         }
@@ -275,15 +295,7 @@ namespace Minecraft
         
         private static void Dispose()
         {
-            for (int x = 0; x < chunks.GetLength(0); x++)
-            {
-                for (int z = 0; z < chunks.GetLength(1); z++)
-                {
-                    chunks[x,z].Dispose();
-                }
-            }
-            Shader.Dispose();
-            _texture2D.Dispose();
+            renderer.Dispose();
         }
 
         private static void KeyDown(IKeyboard keyboard, Key key, int arg3)
@@ -309,19 +321,19 @@ namespace Minecraft
             }
             
             // Camera Switch
-
             if (key == Key.F5)
             {
                 if (viewMode == ViewMode.FirstPerson)
                 {
                     viewMode = ViewMode.Orbit;
-                    camera = orbit_camera;
+                    Engine.MainCamera = orbit_camera;
                 }
                 else if (viewMode == ViewMode.Orbit)
                 {
                     viewMode = ViewMode.FirstPerson;
-                    camera = fps_camera;
+                    Engine.MainCamera = fps_camera;
                 }
+                renderer.camera = Engine.MainCamera;
                 
                 Console.WriteLine($"Switching view mode to {viewMode}");
             }
@@ -336,6 +348,11 @@ namespace Minecraft
                 {
                     window.WindowState = WindowState.Fullscreen; // Bascule en mode plein écran
                 }
+            }
+
+            if (key == Key.Space)
+            {
+                renderer.SwapLightParams();
             }
         }
 

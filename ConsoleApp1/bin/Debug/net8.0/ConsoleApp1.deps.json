@@ -8,14 +8,65 @@
     ".NETCoreApp,Version=v8.0": {
       "ConsoleApp1/1.0.0": {
         "dependencies": {
+          "MathNet.Numerics": "6.0.0-beta1",
           "Newtonsoft.Json": "13.0.3",
           "Silk.NET": "2.21.0",
+          "Silk.NET.Assimp": "2.21.0",
           "Silk.NET.Core": "2.21.0",
+          "Silk.NET.OpenGL.Extensions.ImGui": "2.21.0",
           "SixLabors.ImageSharp": "3.1.4",
           "StbImageSharp": "2.27.14"
         },
         "runtime": {
           "ConsoleApp1.dll": {}
+        }
+      },
+      "ImGui.NET/1.89.9.3": {
+        "dependencies": {
+          "System.Buffers": "4.5.1",
+          "System.Numerics.Vectors": "4.5.0",
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/ImGui.NET.dll": {
+            "assemblyVersion": "1.89.9.3",
+            "fileVersion": "1.89.9.3"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/linux-x64/native/libcimgui.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx/native/libcimgui.dylib": {
+            "rid": "osx",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-arm64/native/cimgui.dll": {
+            "rid": "win-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/cimgui.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/cimgui.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "MathNet.Numerics/6.0.0-beta1": {
+        "runtime": {
+          "lib/net8.0/MathNet.Numerics.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.0.0"
+          }
         }
       },
       "Microsoft.CSharp/4.7.0": {},
@@ -59,6 +110,19 @@
           "Silk.NET.Windowing": "2.21.0"
         }
       },
+      "Silk.NET.Assimp/2.21.0": {
+        "dependencies": {
+          "Silk.NET.Core": "2.21.0",
+          "Silk.NET.Maths": "2.21.0",
+          "Ultz.Native.Assimp": "5.3.1.1"
+        },
+        "runtime": {
+          "lib/net5.0/Silk.NET.Assimp.dll": {
+            "assemblyVersion": "2.21.0.0",
+            "fileVersion": "2.21.0.0"
+          }
+        }
+      },
       "Silk.NET.Core/2.21.0": {
         "dependencies": {
           "Microsoft.CSharp": "4.7.0",
@@ -100,6 +164,17 @@
         },
         "runtime": {
           "lib/net5.0/Silk.NET.Input.Common.dll": {
+            "assemblyVersion": "2.21.0.0",
+            "fileVersion": "2.21.0.0"
+          }
+        }
+      },
+      "Silk.NET.Input.Extensions/2.21.0": {
+        "dependencies": {
+          "Silk.NET.Input.Common": "2.21.0"
+        },
+        "runtime": {
+          "lib/net5.0/Silk.NET.Input.Extensions.dll": {
             "assemblyVersion": "2.21.0.0",
             "fileVersion": "2.21.0.0"
           }
@@ -157,6 +232,21 @@
         },
         "runtime": {
           "lib/net5.0/Silk.NET.OpenGL.dll": {
+            "assemblyVersion": "2.21.0.0",
+            "fileVersion": "2.21.0.0"
+          }
+        }
+      },
+      "Silk.NET.OpenGL.Extensions.ImGui/2.21.0": {
+        "dependencies": {
+          "ImGui.NET": "1.89.9.3",
+          "Silk.NET.Input.Common": "2.21.0",
+          "Silk.NET.Input.Extensions": "2.21.0",
+          "Silk.NET.OpenGL": "2.21.0",
+          "Silk.NET.Windowing.Common": "2.21.0"
+        },
+        "runtime": {
+          "lib/net5.0/Silk.NET.OpenGL.Extensions.ImGui.dll": {
             "assemblyVersion": "2.21.0.0",
             "fileVersion": "2.21.0.0"
           }
@@ -264,6 +354,50 @@
       "System.Text.Json/8.0.0": {
         "dependencies": {
           "System.Text.Encodings.Web": "8.0.0"
+        }
+      },
+      "Ultz.Native.Assimp/5.3.1.1": {
+        "runtimeTargets": {
+          "runtimes/linux-arm/native/libassimp.so.5": {
+            "rid": "linux-arm",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-arm64/native/libassimp.so.5": {
+            "rid": "linux-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-x64/native/libassimp.so.5": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx-arm64/native/libassimp.5.dylib": {
+            "rid": "osx-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx-x64/native/libassimp.5.dylib": {
+            "rid": "osx-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-arm64/native/Assimp64.dll": {
+            "rid": "win-arm64",
+            "assetType": "native",
+            "fileVersion": "5.3.0.0"
+          },
+          "runtimes/win-x64/native/Assimp64.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "5.3.0.0"
+          },
+          "runtimes/win-x86/native/Assimp32.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "5.3.0.0"
+          }
         }
       },
       "Ultz.Native.GLFW/3.4.0": {
@@ -377,6 +511,20 @@
       "serviceable": false,
       "sha512": ""
     },
+    "ImGui.NET/1.89.9.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-KDU6oYAju/c1JR5gP23Ea+FUR62J3AvoDB5zlKHCALi3u5sGBmdFcSOE6bg8DJeGgzluWOS5IO/MhJtrGdkNKw==",
+      "path": "imgui.net/1.89.9.3",
+      "hashPath": "imgui.net.1.89.9.3.nupkg.sha512"
+    },
+    "MathNet.Numerics/6.0.0-beta1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-GTwwNScDIL5+EvU6bN9+TP8bEbhcgR0hnVLZTriwSlXtzYU1h5EPpN58iojejeN/puC1+CVSoeuWNFhERkg71g==",
+      "path": "mathnet.numerics/6.0.0-beta1",
+      "hashPath": "mathnet.numerics.6.0.0-beta1.nupkg.sha512"
+    },
     "Microsoft.CSharp/4.7.0": {
       "type": "package",
       "serviceable": true,
@@ -412,6 +560,13 @@
       "path": "silk.net/2.21.0",
       "hashPath": "silk.net.2.21.0.nupkg.sha512"
     },
+    "Silk.NET.Assimp/2.21.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-OnwatGzQs6mKS8MN6InwSIy14PRmfVU6wIw69TX5XrUA8I4OeGl1xanigFe9prcc0VQbn4g3JtmCyMsTKS0DIA==",
+      "path": "silk.net.assimp/2.21.0",
+      "hashPath": "silk.net.assimp.2.21.0.nupkg.sha512"
+    },
     "Silk.NET.Core/2.21.0": {
       "type": "package",
       "serviceable": true,
@@ -439,6 +594,13 @@
       "sha512": "sha512-olS5rw8KEakrJXSWNEAcU52SesxpwYECjLFP/L+vA3G8Gr798DeOzwlp6PMZpQkqXYkmkxoOaSeL9Yjf4A5ayQ==",
       "path": "silk.net.input.common/2.21.0",
       "hashPath": "silk.net.input.common.2.21.0.nupkg.sha512"
+    },
+    "Silk.NET.Input.Extensions/2.21.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-QX8zaap2rxxDPRw0eSHewic36f9oiFVWod4cazQmQzrYCftv5A10T6vzdUzfIbh+F975W+kpYY6rH+KHmBS0+g==",
+      "path": "silk.net.input.extensions/2.21.0",
+      "hashPath": "silk.net.input.extensions.2.21.0.nupkg.sha512"
     },
     "Silk.NET.Input.Glfw/2.21.0": {
       "type": "package",
@@ -474,6 +636,13 @@
       "sha512": "sha512-/8SnCbIM8PpddkacZm7trt0VRiZyN0xGTdwZr4bjsgkfbuqM86Qf0JsQLFPkZqIiVDAiIkRgw94kQbzJVz10Iw==",
       "path": "silk.net.opengl/2.21.0",
       "hashPath": "silk.net.opengl.2.21.0.nupkg.sha512"
+    },
+    "Silk.NET.OpenGL.Extensions.ImGui/2.21.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-zWJ0Cpzj8rOc/uPVw+8rqw76fe2Tw+Wc+aHGEzxlXk6p1neCcrGXhzU6WTzjz+vSkTKCuLrajFGIsfVUZT8cWQ==",
+      "path": "silk.net.opengl.extensions.imgui/2.21.0",
+      "hashPath": "silk.net.opengl.extensions.imgui.2.21.0.nupkg.sha512"
     },
     "Silk.NET.SDL/2.21.0": {
       "type": "package",
@@ -579,6 +748,13 @@
       "sha512": "sha512-OdrZO2WjkiEG6ajEFRABTRCi/wuXQPxeV6g8xvUJqdxMvvuCCEk86zPla8UiIQJz3durtUEbNyY/3lIhS0yZvQ==",
       "path": "system.text.json/8.0.0",
       "hashPath": "system.text.json.8.0.0.nupkg.sha512"
+    },
+    "Ultz.Native.Assimp/5.3.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-uXB7zMDwhXN75ODLBgsCfVfemH6HKJ8i2s8Y7ZxuKoQcfZf0LNpqHP8z6Ma/kH1gdSYiX+m13ZmHZqamnHifZA==",
+      "path": "ultz.native.assimp/5.3.1.1",
+      "hashPath": "ultz.native.assimp.5.3.1.1.nupkg.sha512"
     },
     "Ultz.Native.GLFW/3.4.0": {
       "type": "package",
